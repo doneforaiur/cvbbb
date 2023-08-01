@@ -6,54 +6,40 @@ if os.environ["OPENAI_API_KEY"] is None:
     print("OPENAI_API_KEY environment variable not set")
     os.exit(1)
 
-guidance.llm = guidance.llms.OpenAI("text-ada-001", api_key=os.environ["OPENAI_API_KEY"])
-# guidance.llm = guidance.llms.Transformers("stabilityai/stablelm-base-alpha-3b", device=0)
+guidance.llm = guidance.llms.OpenAI("text-davinci-003", api_key=os.environ["OPENAI_API_KEY"])
 
-# define a guidance program that adapts proverbs
 program = guidance("""
-Extract important information from given plain text to JSON format. Leave blank if the information is not provided.
-                   
+Extract and parse important information from given plain text to JSON format. Place "" if the information is not provided or already in a list. Convert relative dates to 03/2008 format. Currently it's 2023.           
 User information: "{{user_info}}"
-
 JSON format:
 ```json
 {
-    
-    # PERSONAL INFORMATION
-    
     "first_name": "{{gen 'name' stop='"'}}",
     "last_name": "{{gen 'last_name' stop='"'}}",
     "age": "{{gen 'age' stop='"'}}",  
     "email": "{{gen 'email' stop='"'}}",
     "phone": "{{gen 'phone' stop='"'}}",
     "personal_website": "{{gen 'personal_website' stop='"'}}",
+    "linkedin_link": "{{gen 'linkedin_link' stop='"'}}",
+    "number_of_work_history_entries": {{gen 'number_of_work_history_entries' stop=','}},
+    "number_of_education_entries": {{gen 'number_of_education_entries' stop=','}},
     
-    "number_of_work_history_entries": {{gen 'number_of_work_history_entries' pattern='[0-9]+' stop=','}},
-    "number_of_education_entries": {{gen 'number_of_education_entries' pattern='[0-9]+' stop=','}},
+    "previous_workplace_company_name": [{{gen 'previous_workplace_company_name' num_iterations=3 stop=']'}}]
+    "previous_workplace_position": [{{gen 'previous_workplace_position' num_iterations=3 stop=']'}}]
+    "previous_workplace_start_date": [{{gen 'previous_workplace_start_date' num_iterations=3 stop=']'}}]
+    "previous_workplace_end_date": [{{gen 'previous_workplace_end_date' num_iterations=3 stop=']'}}]
+    "previous_workplace_description": [{{gen 'previous_workplace_description' num_iterations=3 stop=']'}}]
     
-    "all_used_softwares_and_frameworks": [{{gen 'all_used_softwares_and_frameworks' stop=']'}}],
-    
-    # WORK EXPERIENCE
-    
-    # ! TODO: loops doesnt work
-    "work_experience": [{{#geneach 'items' num_iterations=2 join=', '}}
-    {
-        "company_name": "{{gen 'this' stop='"'}}",
-        "position": "{{gen 'this' stop='"'}}",
-        "start_date": "{{gen 'this' stop='"'}}",
-        "end_date": "{{gen 'this' stop='"'}}",
-        "description": "{{gen 'this' stop='"'}}",
-        "location": "{{gen 'this' stop='"'}}"
-    }
-    {{/geneach}}]
-    
+
 }
 ```
 """)
 
-# execute the program on a specific proverb
-executed_program = program(
-    user_info="Hello, my name is John Silver and I am 25 years old. I have worked for Intel in Santa Cruz for 5 years starting in 2011 and then quit when I found a job at Apple. Now, I'm a Team Lead. I worked on developing Android projects and selling them.",
+user_input = """Hello, my name is John Silver and I am 25 years old. I graduated UCLA in 2010 and I have started my professional career in October of 2011. I have worked as a software engineer at Google. I worked on numerous projects including Speech to Text, Text to Speech, Large Language Models, and many more. We developed a special algorithm that can generate a song from a given picture. After working at Google for 5 years, I switched to Apple as a Team Lead. I have been working at Apple for 3 years now.I'm currently working on a product that lets users generate a CV from their LinkedIn profile. I have a personal websitehttps://www.johnsilver.com and my LinkedIn profile is https://www.linkedin.com/in/johnsilver. My email is me@johnsilver.com.I've used Python, Java, C++, and JavaScript. I have a dog named Rex. I love to play tennis and I'm a big fan of the Lakers."""
+
+cv_information = program(
+    user_info=user_input,
 )
 
-print(executed_program)
+print(cv_information)
+
