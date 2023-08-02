@@ -5,19 +5,12 @@
 GPT meets LaTeX. Type what you did over the years and CVBBB will generate a nice looking CV for you.
 
 ## How to use?
-- Run `docker run -d -e MODEL_TYPE=falcon -e OPENAI_API_KEY=YOUR_TOKEN -p 5000:5000 ghcr.io/doneforaiur/cvbbb:main`.
+- Run `docker run -d -e OPENAI_API_KEY=YOUR_TOKEN -p 5000:5000 ghcr.io/doneforaiur/cvbbb:main`.
 - Open `localhost:5000` in your browser.
 - Type your CV in the text area as plain text.
 - Click on the `Generate CV` button.
 - Preview the generated CV.
 - Download the generated CV.
-
-**Important note**: If you want to use `falcon` on your GPU, you need to install `nvidia-docker2` and add `--gpus all` flag to the `docker run` command mentioned above.
-
-## Parameters
-- `MODEL_TYPE`: The model to use for generating the CV. Avaliable options are `falcon` and `openai`.
-- `OPENAI_API_KEY`: Your OpenAI API key if `MODEL_TYPE` is `openai`.
-
 
 
 ## TODOs
