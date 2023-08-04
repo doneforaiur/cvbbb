@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from logic import generate_pdf
 
 app = Flask(__name__, template_folder='flask_templates')
@@ -15,7 +15,7 @@ def generate():
     pdf = generate_pdf(text)
 
     if return_type == 'pdf':
-        return pdf
+        return send_file(pdf, as_attachment=True)
     elif return_type == 'html':
         return render_template('index.html', text=text ,pdf=pdf)
     else:

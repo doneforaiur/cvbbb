@@ -3,67 +3,16 @@ from pylatex.package import Package
 from pylatex import Document, Section, Subsection, Command, UnsafeCommand
 from pylatex.utils import NoEscape, italic
 
+def info_to_pdf(user_info):
 
-# class ResumeEnvironment(Environment):
-#     """
-#     A class representing a custom LaTeX environment.
-#     This class represents a custom LaTeX environment named
-#     ``resumeEnvironment``.
-#     """
-
-#     _latex_name = 'resumeEnvironment'
-#     packages = [
-#                 Package('mdframed'),
-#                 Package('babel', options="english"),
-#                 #Package('inputenc'), #Already added by pylatex
-#                 Package('microtype', options ="protrusion=true,expansion=true"),
-#                 Package('amsmath'),
-#                 Package('amsfonts'),
-#                 Package('amsthm'),
-#                 Package('graphicx'),
-#                 Package('xcolor', options="svgnames"),
-#                 Package('geometry'),
-#                 Package('url'),
-#                 Package('sectsty')]
-
-
-
-#######################################
-
-class MyName(CommandBase):
-    _latex_name = 'MyName'
-
-class MySlogan(CommandBase):
-    _latex_name = 'MySlogan'
-
-class NewPart(CommandBase):
-    _latex_name = 'NewPart'
-
-class PersonalEntry(CommandBase):
-    _latex_name = 'PersonalEntry'
-
-class SkillsEntry(CommandBase):
-    _latex_name = 'SkillsEntry'
-
-class EducationEntry(CommandBase):
-    _latex_name = 'EducationEntry'
-
-class WorkEntry(CommandBase):
-    _latex_name = 'WorkEntry'
-
-
-
-
-if __name__ == '__main__':
-
-
+    # ? Import packages, set rules
     doc = Document(documentclass = 'scrartcl' , document_options = ["paper=a4","fontsize=11pt"], fontenc=None, inputenc=None)
-
     doc.preamble.append(Command("usepackage", "babel","english"))
     doc.preamble.append(Command("usepackage", "inputenc", "utf8x"))
     doc.preamble.append(Command("usepackage","microtype", ["protrusion=true" , "expansion=true"]))
     doc.preamble.append(Command("usepackage", "amsmath"))
     doc.preamble.append(Command("usepackage", "amsfonts"))
+    doc.preamble.append(Command("usepackage", "hyperref"))
     doc.preamble.append(Command("usepackage", "amsthm"))
     doc.preamble.append(Command("usepackage", "graphicx"))
     doc.preamble.append(Command("usepackage", "xcolor", "svgnames"))
@@ -71,141 +20,145 @@ if __name__ == '__main__':
     doc.preamble.append(Command("usepackage", "url"))
     doc.preamble.append(Command("usepackage", "sectsty"))
     doc.preamble.append(Command("usepackage", "mdframed"))
-
-
     doc.append(Command('frenchspacing'))
     doc.append(Command('pagestyle', 'empty'))
     doc.append(Command("textheight=700px"))
-
     doc.append(Command("sectionfont", NoEscape(r"""\usefont{OT1}{phv}{b}{n} \sectionrule{0pt}{0pt}{-5pt}{3pt}""")))
-
     doc.append(Command("newlength",Command("spacebox")))
-
     doc.append(Command("settowidth",[Command("spacebox"), "8888888888"]))
 
-# \newlength{\spacebox}
-# \settowidth{\spacebox}{8888888888}
 
-
-
+    # ? Custom commands for entries
     sepspace = UnsafeCommand('newcommand', r'\sepspace',
                              extra_arguments=r"""
-                             \vspace*{1em}
-"""
-)
-
-    doc.append(sepspace)
+                             \vspace*{1em}""")
 
     MyName = UnsafeCommand('newcommand', r'\MyName', options=1,
                              extra_arguments=r"""
-            \Huge \usefont{OT1}{phv}{b}{n} \hfill #1
-            \par \normalsize
-"""
-)
-
-    doc.append(MyName)
+                            \Huge \usefont{OT1}{phv}{b}{n} \hfill #1
+                            \par \normalsize \normalfont""")
 
     NewPart = UnsafeCommand('newcommand', r'\NewPart', options=1,
                              extra_arguments=r"""\section*{\uppercase{#1}}""")
 
-    doc.append(NewPart)
-
     PersonalEntry = UnsafeCommand('newcommand', r'\PersonalEntry', options=2,
                              extra_arguments=r"""
-        \noindent\hangindent=2em\hangafter=0 % Indentation
-        \parbox{\spacebox}{        % Box to align text
-        \textit{#1}}               % Entry name (birth, address, etc.)
-        \hspace{1.5em} #2 \par}    % Entry value  """)
-
-    doc.append(PersonalEntry)
-
-
+                            \noindent\hangindent=2em\hangafter=0 % Indentation
+                            \parbox{\spacebox}{        % Box to align text
+                            \textit{#1}}               % Entry name (birth, address, etc.)
+                            \hspace{1.5em} #2 
+                            \par
+                            """)
 
     SkillsEntry = UnsafeCommand('newcommand', r'\SkillsEntry', options=2,
                              extra_arguments=r"""
-        \noindent\hangindent=2em\hangafter=0 % Indentation
-        \parbox{\spacebox}{        % Box to align text
-        \textit{#1}}			   % Entry name (birth, address, etc.)
-        \hspace{1.5em} #2 \par    % Entry value
-"""
-
-)
-
-    doc.append(SkillsEntry)
-
-###########################
-
-###########################
-
-
+                            \noindent\hangindent=2em\hangafter=0 % Indentation
+                            \parbox{\spacebox}{        % Box to align text
+                            \textit{#1}}			   % Entry name (birth, address, etc.)
+                            \hspace{1.5em} #2 \par    % Entry value 
+                            """)
 
     EducationEntry = UnsafeCommand('newcommand', r'\EducationEntry', options=4,
                              extra_arguments=r"""
-        \noindent \textbf{#1} \hfill      % Study
-        \colorbox{Black}{%
-            \parbox{6em}{%
-            \hfill\color{White}#2}} \par  % Duration
-        \noindent \textit{#3} \par        % School
-        \noindent\hangindent=2em\hangafter=0 \small #4 % Description
-        \normalsize \par
- """
- 
- )
-
-    doc.append(EducationEntry)
-
-
-###########################
-
-###########################
-
-
+                                \noindent \textbf{#1} \hfill      % Study
+                                \colorbox{Black}{%
+                                    \parbox{6em}{%
+                                    \hfill\color{White}#2}} \par  % Duration
+                                \noindent \textit{#3} \par        % School
+                                \noindent\hangindent=2em\hangafter=0 \small #4 % Description
+                                \normalsize \par
+                                """)
 
     WorkEntry = UnsafeCommand('newcommand', r'\WorkEntry', options=4,
                              extra_arguments=r"""
-         % Same as \EducationEntry
-        \noindent \textbf{#1} \hfill      % Jobname
-        \colorbox{Black}{\color{White}#2} \par  % Duration
-        \noindent \textit{#3} \par              % Company
-        \noindent\hangindent=2em\hangafter=0 \small #4 % Description
-        \normalsize \par
- """
- 
- )
+                            % Same as \EducationEntry
+                            \noindent \textbf{#1} \hfill      % Jobname
+                            \colorbox{Black}{\color{White}#2} \par  % Duration
+                            \noindent \textit{#3} \par              % Company
+                            \noindent\hangindent=2em\hangafter=0 \small #4 % Description
+                            \normalsize \par 
+                            """)
 
+
+    doc.append(sepspace)
+    doc.append(MyName)
+    doc.append(NewPart)
+    doc.append(PersonalEntry)
+    doc.append(SkillsEntry)
+    doc.append(EducationEntry)
     doc.append(WorkEntry)
-
-
-    doc.append(Command("MyName","Abhinav Sharma"))
+    
+    
+    # Actual content
+    doc.append(Command("MyName", user_info["first_name"] + " " + user_info["last_name"]))
     doc.append(Command('sepspace'))
 
     doc.append(Command('NewPart', ["Personal details", NoEscape("")]))
 
-    doc.append(Command('PersonalEntry', ["Birth", "January 1, 1980"]))
-    doc.append(Command('PersonalEntry' , ["Address", "111 First St, New York"]))
-    doc.append(Command('PersonalEntry', ["Phone", "(123) 000-0000"]))
-    # doc.append(Command('PersonalEntry'["Mail", "\url{me@home.com}"]))
-    doc.append(Command('NewPart', ["Education details", NoEscape("")]))
-    doc.append(Command("EducationEntry",["MSc. Name of Education", NoEscape("2010-2012"), "Name of University", """Descriptive text goes here. In order to maintain a stylish look, try to fill this description with a few lines of text. Do the same for the other entries in the education section."""]))
-    doc.append(Command('sepspace'))
-    doc.append(Command('NewPart', ["Skills", NoEscape("")]))
-    doc.append(Command("SkillsEntry", [ "Human Languages", "English (fluent)"]))
-    doc.append(Command("SkillsEntry", [ NoEscape(""), "Portuguese (fluent)"]))
-    doc.append(Command("SkillsEntry", [ "Programming Languages", "Clojure"]))
+    if user_info["address"] != "":    
+        doc.append(Command('PersonalEntry' , ["Address", user_info["address"]]))
 
-    doc.append(Command('NewPart', ["Work details", NoEscape("")]))
+    if user_info["phone"] != "":
+        doc.append(Command('PersonalEntry', ["Phone", user_info["phone"]]))
+    
+    if user_info["personal_website"] != "":
+        doc.append(Command('PersonalEntry', ["Website", NoEscape("\href{" + user_info["personal_website"] + "}{" + user_info["personal_website"] +"}")]))
+    
+    if user_info["github_link"] != "":
+        doc.append(Command('PersonalEntry', ["Github", NoEscape("\href{" + user_info["github_link"] + "}{" + user_info["github_link"] +"}")]))
+    
+    if user_info["linkedin_link"] != "":
+        doc.append(Command('PersonalEntry', ["LinkedIn", NoEscape("\href{" + user_info["linkedin_link"] + "}{" + user_info["linkedin_link"] +"}")]))
+        
+    
+    
+    if user_info["email"] != "":
+        doc.append(Command('PersonalEntry', ["Mail", NoEscape("\href{mailto:" + user_info["email"] + "}{" + user_info["email"] +"}")]))
 
-    doc.append(Command("WorkEntry",["Chief Technology Officer", NoEscape("August 2018 - Present"), "Cyber Indian App Stores", """I am leading a team of 8 in the core engineering wing."""]))
+    if len(user_info["previous_workplace_info"]) > 0:
+        doc.append(Command('NewPart', ["Work details", NoEscape("")]))
 
-    doc.append(Command('sepspace'))
+        for work_info in user_info["previous_workplace_info"]:
+            doc.append(Command("WorkEntry",[work_info["position"], NoEscape(work_info["start_date"] + " - " + work_info["end_date"]),
+                                            work_info["company_name"], work_info["description"]]))
+            doc.append(Command('sepspace'))
 
-    doc.append(Command("WorkEntry",[NoEscape("Software Engineer - Machine Learning"), NoEscape("August 2016 - July 2017"), "Fourtek (IT) Solutions Pvt. Ltd.", """I worked as a co-founder of a product targeting the StartUp ecosystem."""]))
+    if len(user_info["previous_education_info"]) > 0:
+        doc.append(Command('NewPart', ["Education details", NoEscape("")]))
+    
+        for education_info in user_info["previous_education_info"]:
+            doc.append(Command("EducationEntry", [education_info["degree"], NoEscape(education_info["start_date"] + " - " + education_info["end_date"]),
+                                                education_info["school_name"], education_info["description"]]))
+            doc.append(Command('sepspace'))
+    
+    prev_lang = user_info["previously_used_programming_languages"]
+    prev_frameworks = user_info["previously_used_frameworks"]
+    prev_databases = user_info["previously_used_databases"]
+    human_languages = user_info["human_languages"]
+    
+    if len(prev_lang) > 0 or len(prev_frameworks) > 0 or len(prev_databases) > 0 or len(human_languages) > 0:
+        doc.append(Command('NewPart', ["Skills", NoEscape("")]))
+    
+    if len(prev_lang) > 0:
+        doc.append(Command("SkillsEntry", ["Programming Languages", ", ".join(prev_lang)]))
+        
+    if len(prev_frameworks) > 0:
+        doc.append(Command("SkillsEntry", ["Frameworks", ", ".join(prev_frameworks)]))
+        
+    if len(prev_databases) > 0:
+        doc.append(Command("SkillsEntry", ["Databases", ", ".join(prev_databases)]))
 
-    doc.append(Command('sepspace'))
 
-
-
-    tex = doc.dumps()  # The document as string in LaTeX syntax
-
-    doc.generate_tex("./simple-resume2")
-    doc.generate_pdf("./simple-resume2")
+    if len(human_languages) > 0:
+        doc.append(Command("SkillsEntry", [ "Human Languages", "English (fluent)"]))
+        for index ,lang in enumerate(human_languages):
+            if index == 0:
+                continue
+            doc.append(Command("SkillsEntry", [ NoEscape(""), "Portuguese (fluent)"]))
+    
+    tex = doc.dumps()
+    
+    doc.generate_tex("./resume")
+    doc.generate_pdf("./resume")
+    
+    return "./resume.pdf"
