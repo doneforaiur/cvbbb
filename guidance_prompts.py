@@ -8,21 +8,10 @@ if os.environ["OPENAI_API_KEY"] is None:
 
 guidance.llm = guidance.llms.OpenAI("gpt-3.5-turbo-0301", api_key=os.environ["OPENAI_API_KEY"])
 
-
-
 def extract_info(user_input):
     
     # ? Example input
-    # user_input = """
-    # Hello, my name is John Silver and I am 25 years old. I live in Palo Alto right now. I graduated from UCLA in 2010 with a Bachelor's 
-    # Degree in Computer Science, while in UCLA I developed some Java aplications for the school. I have started my professional  career
-    # in October of 2011. I have worked as a software engineer at Google. I worked on numerous projects including Speech to Text, Text to Speech,
-    # Large Language Models, and many more. We developed a special algorithm that can generate a song from a given picture. After working at
-    # Google for 5 years, I switched to Apple as a Team Lead. I have been working at Apple for 3 years now. I'm currently working on a product
-    # that lets users generate a CV from their LinkedIn profile. I have a personal websitehttps://www.johnsilver.com  and my LinkedIn profile 
-    # is https://www.linkedin.com/in/johnsilver. My email is me@johnsilver.com. I've used Python, C++,  and JavaScript. Delved into the MySQL
-    # and NoSQL. Used a bit React and Flutter. I have a dog named Rex. I love to play tennis and I'm a big fan of the Lakers.
-    # """
+    # user_input = """Hello, my name is John Silver and I am 25 years old. I live in Palo Alto right now. I graduated from UCLA in 2010 with a Bachelor's Degree in Computer Science, while in UCLA I developed some Java aplications for the school. I have started my professional  careerin October of 2011. I have worked as a software engineer at Google. I worked on numerous projects including Speech to Text, Text to Speech,Large Language Models, and many more. We developed a special algorithm that can generate a song from a given picture. After working atGoogle for 5 years, I switched to Apple as a Team Lead. I have been working at Apple for 3 years now. I'm currently working on a productthat lets users generate a CV from their LinkedIn profile. I have a personal websitehttps://www.johnsilver.com  and my LinkedIn profile is https://www.linkedin.com/in/johnsilver. My email is me@johnsilver.com. I've used Python, C++,  and JavaScript. Delved into the MySQLand NoSQL. Used a bit React and Flutter. I have a dog named Rex. I love to play tennis and I'm a big fan of the Lakers."""
     
     # ? Example output
     # user_info = {'first_name': 'John', 'last_name': 'Silver', 'email': 'me@johnsilver.com', 'phone': '', 'address': 'Palo Alto', 'personal_website': 'https://www.johnsilver.com', 'linkedin_link': 'https://www.linkedin.com/in/johnsilver', 'github_link': '', 'previous_education_info': [{'school_name': 'UCLA', 'degree': "Bachelor's Degree in Computer Science", 'start_date': '09/06', 'end_date': '06/10', 'description': 'Developed some Java aplications for the school.'}], 'previous_workplace_info': [{'company_name': 'Apple', 'position': 'Team Lead', 'start_date': '10/16', 'end_date': '', 'description': 'Working on a product that lets users generate a CV from their LinkedIn profile.'}, {'company_name': 'Google', 'position': 'Software Engineer', 'start_date': '10/11', 'end_date': '10/16', 'description': 'Worked on numerous projects including Speech to Text, Text to Speech, Large Language Models, and many more. Developed a special algorithm that can generate a song from a given picture.'}], 'previously_used_programming_languages': ['Python', 'C++', 'JavaScript'], 'previously_used_frameworks': ['React', 'Flutter'], 'previously_used_databases': ['MySQL', 'NoSQL'], 'human_languages': []}
@@ -83,10 +72,8 @@ def extract_info(user_input):
 
 def suggest_improvements(user_info_json):
     possible_improvements = guidance("""
-    {{#system}} You improve the given CV information by returning which information is missing and what can be improved.
-    If the workplace or education entries' descriptions are not detailed enough or missing, suggest the user to add more details and give example. Bullet points are preferred.
-    If the number of programming languages and frameworks are less than 3, suggest the user to add more. Print only JSON
-    Return suggestions in JSON format;
+    {{#system}} You improve the given CV information by returning which information is missing and what can be improved. Find ambiguities and suggest the user to add more details or delete unnecessary information. If the workplace or education entries' descriptions are not detailed enough or missing, suggest the user to add more details and give example. Bullet points are preferred. If the number of programming languages and frameworks are less than 3, suggest the user to add more. Group personal information into 1 suggestion.
+    Print only JSON. Return suggestions in JSON format;
     {
         suggestions: [
             {
@@ -119,7 +106,7 @@ def suggest_improvements(user_info_json):
 
     return json_data
 
-def improve_cv(user_info_json, improved_cv):
+def improve_cv(user_info_json, suggestions):
     make_improvements = guidance("""
     {{#system}} You improve the given CV information and suggestions by the user. Change necessary information and add missing information.
     Print improved CV information in JSON format only.
@@ -134,11 +121,11 @@ def improve_cv(user_info_json, improved_cv):
     """)
     
     improved_cv = make_improvements(
-        user_info=str(user_info_json)
+        user_info=str(user_info_json),
+        improvements=suggestions
     )
 
     # ! TODO: Validate the JSON output
     json_data = eval(improved_cv["suggestions"])
-
 
     return json_data
