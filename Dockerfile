@@ -9,4 +9,4 @@ RUN apt update && apt install latexmk texlive-fonts-recommended texlive-latex-ex
 RUN pip3 install -r requirements.txt
 
 EXPOSE 8501
-CMD ["python3", "app.py"]
+CMD ["streamlit", "run", "streamlit_app.py", "--server.headless", "true"]
