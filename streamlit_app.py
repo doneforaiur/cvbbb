@@ -4,7 +4,18 @@ import streamlit as st
 from guidance_prompts import extract_info, suggest_improvements, improve_cv
 from latex_templates import info_to_pdf
 
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="CV Builder but Better!",
+    page_icon="📄",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+    menu_items={
+        'Get Help': 'https://github.com/doneforaiur/cvbbb',
+        'Report a bug': "https://github.com/doneforaiur/cvbbb/issues",
+        'About': "# Want a CV but don't know how? You're in the right place!"
+    }
+)
+
 user_input_area, pdf_area = st.columns(2, gap="medium")
 
 if "pdf_path" not in st.session_state:

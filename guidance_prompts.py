@@ -1,7 +1,6 @@
 import guidance
 import os
 
-
 if os.environ["OPENAI_API_KEY"] is None:
     print("OPENAI_API_KEY environment variable not set")
     os.exit(1)
@@ -64,7 +63,6 @@ def extract_info(user_input):
         user_info=user_input
     )
 
-    # ! TODO: Validate the JSON output
     json_data = eval(cv_information["extracted_information"])
 
     return json_data
@@ -94,12 +92,7 @@ def suggest_improvements(user_info_json):
         user_info=str(user_info_json)
     )
 
-    print(improvements)
-
-
-    # ! TODO: Validate the JSON output
     json_data = eval(improvements["suggestions"])
-    print(json_data)
     
     # sort based on importancy
     json_data = sorted(json_data["suggestions"], key=lambda k: k['importancy'])
@@ -125,7 +118,6 @@ def improve_cv(user_info_json, suggestions):
         improvements=suggestions
     )
 
-    # ! TODO: Validate the JSON output
     json_data = eval(improved_cv["suggestions"])
 
     return json_data
