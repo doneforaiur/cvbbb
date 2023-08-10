@@ -10,8 +10,15 @@ GPT meets LaTeX. Type what you did over the years and CVBBB will generate a nice
 - Type your CV in the text area as plain text.
 - Click on the `Generate CV` button.
 - Preview the generated CV.
+- Read the suggested improvements.
+- Type your desired improvements in the text area.
+- Preview the regenerated CV.
 - Download the generated CV.
 
+## Screenshots
+
+![Introduce yourself to the CVBBB.](.github/introduce.png)
+![Recieve feedback and view your CV.](.github/rendered.png)
 
 ## TODOs
 
