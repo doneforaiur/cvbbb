@@ -18,5 +18,8 @@ GPT meets LaTeX. Type what you did over the years and CVBBB will generate a nice
 - [x] Initial development.
 - [x] Add a way to preview the generated CV without downloading it.
 - [x] Add a way to let the user to make adjustments on the generated CV.
+- [ ] Let users add a job listing and let CVBBB generate a cover letter.
+- [ ] Let users add a job listing and let CVBBB generate a tailored CV.
+- [ ] Add a way to determine profession specific "skills" section.
 - [ ] Add more CV templates.
 

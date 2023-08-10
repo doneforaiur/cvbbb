@@ -19,7 +19,7 @@ def extract_info(user_input):
     generate_one_json = guidance("""
     {{#system}} You extract and parse important information from given plain text to JSON format. 
     Place "" if the information is not provided. Current year is 2023, convert relative dates to MM/YY format, like; 11/19. 
-    Sort work and education experience by start date in reverse chronological order.
+    Sort work and education experience by start date in reverse chronological order. Paraphrase the description if not professional enough.
     Schema for the JSON output;
     {
         "first_name": "",
@@ -70,7 +70,10 @@ def extract_info(user_input):
 
 def suggest_improvements(user_info_json):
     possible_improvements = guidance("""
-    {{#system}} You improve the given CV information by returning which information is missing and what can be improved. Find ambiguities and suggest the user to add more details or delete unnecessary information. If the workplace or education entries' descriptions are not detailed enough or missing, suggest the user to add more details and give example. Bullet points are preferred. If the number of programming languages and frameworks are less than 3, suggest the user to add more. Group personal information into 1 suggestion.
+    {{#system}} You improve the given CV information by returning which information is missing and what can be improved. Find ambiguities 
+    and suggest the user to add more details or delete unnecessary information. If the workplace or education entries' descriptions are
+    not detailed enough or missing, suggest the user to add more details and give example. Bullet points are preferred. If the number
+    of programming languages and frameworks are less than 3, suggest the user to add more. Group personal information suggestions into one.
     Print only JSON. Return suggestions in JSON format;
     {
         suggestions: [
