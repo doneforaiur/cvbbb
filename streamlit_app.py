@@ -26,6 +26,12 @@ if "generated_cv" not in st.session_state:
     
 if "user_info_json" not in st.session_state:
     st.session_state["user_info_json"] = {}
+    
+if "generate_cover_letter" not in st.session_state:
+    st.session_state["generate_cover_letter"] = False
+    
+if "job_listing" not in st.session_state:
+    st.session_state["job_listing"] = ""
 
 
 with user_input_area:
@@ -34,6 +40,15 @@ with user_input_area:
     user_input_area_button = st.empty()
 
     if st.session_state.generated_cv == False:
+        generate_cover_letter = st.checkbox('Generate a cover letter?', value=False)
+        if generate_cover_letter:
+            st.session_state["generate_cover_letter"] = True
+        
+        job_listing = user_input_area_text.text_area('Job listing', 'We are looking for ...')
+        if user_input_area_button.button('Generate CV!', use_container_width=True):
+            st.session_state["job_listing"] = job_listing
+                
+        
         user_info = user_input_area_text.text_area('Talk about yourself!', 'I am ...')
         if user_input_area_button.button('Generate CV!', use_container_width=True):
             

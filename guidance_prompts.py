@@ -17,7 +17,8 @@ def extract_info(user_input):
 
     
     generate_one_json = guidance("""
-    {{#system}} You extract and parse important information from given plain text to JSON format. 
+    {{#system}}
+    You extract and parse important information from given plain text to JSON format. 
     Place "" if the information is not provided. Current year is 2023, convert relative dates to MM/YY format, like; 11/19. 
     Sort work and education experience by start date in reverse chronological order. Paraphrase the description if not professional enough.
     Schema for the JSON output;
@@ -52,11 +53,15 @@ def extract_info(user_input):
         "human_languages": [],
     }
     {{/system}}
+    
     {{#user}}
     Text to parse:
     "{{user_info}}"
     {{/user}}
-    {{#assistant}}{{gen 'extracted_information' stop="\n\n"}}{{/assistant}}
+    
+    {{#assistant}}
+    {{gen 'extracted_information' stop="\n\n"}}
+    {{/assistant}}
     """)
 
     cv_information = generate_one_json(
@@ -70,7 +75,8 @@ def extract_info(user_input):
 
 def suggest_improvements(user_info_json):
     possible_improvements = guidance("""
-    {{#system}} You improve the given CV information by returning which information is missing and what can be improved. Find ambiguities 
+    {{#system}}
+    You improve the given CV information by returning which information is missing and what can be improved. Find ambiguities 
     and suggest the user to add more details or delete unnecessary information. If the workplace or education entries' descriptions are
     not detailed enough or missing, suggest the user to add more details and give example. Bullet points are preferred. If the number
     of programming languages and frameworks are less than 3, suggest the user to add more. Group personal information suggestions into one.
@@ -80,15 +86,19 @@ def suggest_improvements(user_info_json):
             {
                 "importancy": enum("none", "low", "medium", "high"),
                 "type": "workplace",
-                "description": "Add more details to your work experience at Google. For example, you can add bullet points like; Developed a special algorithm that can generate a song from a given picture."
+                "description": "Add more details to your work experience at Google. For example, you can add bullet points like; ..."
             }
     }
     {{/system}}
+    
     {{#user}}
     User information:
     "{{user_info}}"
     {{/user}}
-    {{#assistant}}{{gen 'suggestions' stop="\n\n"}}{{/assistant}}
+    
+    {{#assistant}}
+    {{gen 'suggestions' stop="\n\n"}}
+    {{/assistant}}
     """)
     
     improvements = possible_improvements(
@@ -104,21 +114,58 @@ def suggest_improvements(user_info_json):
 
 def improve_cv(user_info_json, suggestions):
     make_improvements = guidance("""
-    {{#system}} You improve the given CV information and suggestions by the user. Change necessary information and add missing information.
+    {{#system}} 
+    You improve the given CV information and suggestions by the user. Change necessary information and add missing information.
     Print improved CV information in JSON format only.
     {{/system}}
+    
     {{#user}}
     User information:
     "{{user_info}}"
+    
     Wanted improvements:
     "{{improvements}}"
+    
     {{/user}}
-    {{#assistant}}{{gen 'suggestions' stop="\n\n"}}{{/assistant}}
+    
+    {{#assistant}}
+    {{gen 'suggestions' stop="\n\n"}}
+    {{/assistant}}
     """)
     
     improved_cv = make_improvements(
         user_info=str(user_info_json),
         improvements=suggestions
+    )
+
+    json_data = eval(improved_cv["suggestions"])
+
+    return json_data
+
+def generate_cover_letter(user_info, job_listing):
+    cover_later_template = guidance("""
+    {{#system}} 
+    You generate a cover letter for the given job listing and user information. 
+    Return cover letter in plain text format.
+    {{/system}}
+    
+    {{#user}}
+    User information:
+    "{{user_info}}"
+    
+    Job listing:
+    "{{job_listing}}"
+    
+    {{/user}}
+    
+    {{#assistant}}
+    {{gen 'cover_letter' stop="\n\n"}}
+    {{/assistant}}
+    """)
+    
+    improved_cv = cover_later_template(
+        user_info=str(user_info),
+        job_listing=job_listing
     )
 
     json_data = eval(improved_cv["suggestions"])
