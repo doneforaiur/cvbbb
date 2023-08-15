@@ -162,3 +162,38 @@ def info_to_pdf(user_info):
     doc.generate_pdf("./resume")
     
     return "./resume.pdf"
+
+
+def info_to_cover_letter(info):
+    doc = Document(documentclass = 'moderncv' , document_options = ["11pt","a4paper","roman"], fontenc=None, inputenc=None)
+    
+    doc.preamble.append(Command("usepackage", "babel","english"))
+    doc.preamble.append(Command("usepackage", "inputenc", "utf8"))
+    # \usepackage[scale=0.75]{geometry}
+    doc.preamble.append(Command("usepackage", "geometry", "scale=0.75"))
+    
+    doc.append(Command("name", info["first_name"] + " " + info["last_name"]))
+    if info["address"] != "":
+        doc.append(Command("address", info["address"]))
+    
+    if info["phone"] != "":
+        doc.append(Command("phone", info["phone"]))
+    
+    if info["email"] != "":
+        doc.append(Command("email", info["email"]))
+    
+    doc.append(Command("begin", "document"))
+    doc.append(Command("recipient", info["recipient"]))
+    doc.append(Command("date", NoEscape(r"\today")))
+    doc.append(Command("opening", info["opening"]))
+    doc.append(Command("closing", info["closing"]))
+
+    doc.append(Command("makelettertitle"))
+    
+    doc.append(info["letter_text"])
+    
+    doc.append(Command("vspace", "1cm"))
+    
+    doc.append(Command("makeletterclosing"))
+    
+    doc.append(Command("end", "document"))

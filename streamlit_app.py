@@ -40,15 +40,15 @@ with user_input_area:
     user_input_area_button = st.empty()
 
     if st.session_state.generated_cv == False:
-        generate_cover_letter = st.checkbox('Generate a cover letter?', value=False)
+        generate_cover_letter = st.checkbox('Generate a cover letter?', value=st.session_state["generate_cover_letter"], disabled=st.session_state["generate_cover_letter"])
         if generate_cover_letter:
             st.session_state["generate_cover_letter"] = True
         
         job_listing = user_input_area_text.text_area('Job listing', 'We are looking for ...')
         if user_input_area_button.button('Generate CV!', use_container_width=True):
             st.session_state["job_listing"] = job_listing
-                
-        
+
+
         user_info = user_input_area_text.text_area('Talk about yourself!', 'I am ...')
         if user_input_area_button.button('Generate CV!', use_container_width=True):
             

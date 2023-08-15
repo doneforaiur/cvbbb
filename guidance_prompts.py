@@ -146,7 +146,20 @@ def generate_cover_letter(user_info, job_listing):
     cover_later_template = guidance("""
     {{#system}} 
     You generate a cover letter for the given job listing and user information. 
-    Return cover letter in plain text format.
+    Return relevant information with cover letter in JSON format only.
+    Include why you want to use for that company, try to include previous work experience and education.
+    Template for output JSON:
+    {
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "phone": "",
+        "address": "",
+        "recipient": "",
+        "opening": "",
+        "closing": "",
+        "letter_text": ""
+    }
     {{/system}}
     
     {{#user}}
@@ -163,11 +176,11 @@ def generate_cover_letter(user_info, job_listing):
     {{/assistant}}
     """)
     
-    improved_cv = cover_later_template(
+    cover_letter_info = cover_later_template(
         user_info=str(user_info),
         job_listing=job_listing
     )
 
-    json_data = eval(improved_cv["suggestions"])
+    json_data = eval(cover_letter_info["cover_letter"])
 
     return json_data
