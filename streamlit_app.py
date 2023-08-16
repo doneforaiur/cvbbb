@@ -32,23 +32,32 @@ if "generate_cover_letter" not in st.session_state:
     
 if "job_listing" not in st.session_state:
     st.session_state["job_listing"] = ""
+    
+if "include_job_listing" not in st.session_state:
+    st.session_state["include_job_listing"] = False
+    
 
 
 with user_input_area:
     improvement_suggestions = st.empty()
     user_input_area_text = st.empty()
+    job_listing_area = st.empty()
     user_input_area_button = st.empty()
 
     if st.session_state.generated_cv == False:
-        generate_cover_letter = st.checkbox('Generate a cover letter?', value=st.session_state["generate_cover_letter"], disabled=st.session_state["generate_cover_letter"])
-        if generate_cover_letter:
-            st.session_state["generate_cover_letter"] = True
-        
-        job_listing = user_input_area_text.text_area('Job listing', 'We are looking for ...')
-        if user_input_area_button.button('Generate CV!', use_container_width=True):
+        include_job_listing = st.checkbox('Include job listing?', value=st.session_state["include_job_listing"])
+        if include_job_listing:
+            st.session_state["include_job_listing"] = not st.session_state["include_job_listing"]
+                
+        if st.session_state["include_job_listing"]:
+            job_listing = job_listing_area.text_area('Job listing', 'We are looking for ...')
             st.session_state["job_listing"] = job_listing
-
-
+        
+        if st.session_state["include_job_listing"]:
+            generate_cover_letter = st.checkbox('Generate a cover letter?', value=st.session_state["generate_cover_letter"])
+            if generate_cover_letter:
+                st.session_state["generate_cover_letter"] = not st.session_state["generate_cover_letter"]
+        
         user_info = user_input_area_text.text_area('Talk about yourself!', 'I am ...')
         if user_input_area_button.button('Generate CV!', use_container_width=True):
             
@@ -77,32 +86,62 @@ with user_input_area:
 
 with pdf_area:
     with open(st.session_state["pdf_path"], "rb") as f:
-        if st.session_state["pdf_path"] == "./place_holder.pdf":
-            disabled = True
-        else:
-            disabled = False
-        pdf_area.download_button(
-            label="Download my CV!",
-            data=f,
-            file_name="resume.pdf",
-            mime="application/pdf",
-            use_container_width=True,
-            disabled=disabled
-        )
-        
-    with open(st.session_state["pdf_path"], "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+        with open(st.session_state["pdf_path"], "rb") as f:
+            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
 
     pdf_display = F'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800" type="application/pdf"></iframe>'
     pdf_area.markdown(pdf_display, unsafe_allow_html=True)
 
+    col1, col2 = st.columns(2, gap="small")
+
+ 
+    with col1:
+        with open(st.session_state["pdf_path"], "rb") as f: 
+            if st.session_state["pdf_path"] == "./place_holder.pdf":
+                disabled = True
+            else:
+                disabled = False
+            if st.session_state["generate_cover_letter"]:
+                col1.download_button(
+                    label="Download my CV!",
+                    data=f,
+                    file_name="resume.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                    disabled=disabled
+                )
+            else:
+                pdf_area.download_button(
+                    label="Download my CV!",
+                    data=f,
+                    file_name="resume.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                    disabled=disabled
+                )
+    if st.session_state["generate_cover_letter"]:
+        with col2:
+            if st.session_state["generate_cover_letter"]:
+                with open(st.session_state["pdf_path"], "rb") as f: 
+                    if st.session_state["pdf_path"] == "./place_holder.pdf":
+                        disabled = True
+                    else:
+                        disabled = False
+                    col2.download_button(
+                        label="Download my cover letter!",
+                        data=f,
+                        file_name="cover_letter.pdf",
+                        mime="application/pdf",
+                        use_container_width=True,
+                        disabled=disabled
+                    )
 
 # Get suggestions after the CV has been generated
 # ? TODO: spinner appears on the very bottom, fix this
 if st.session_state["generated_cv"] == True:
     with st.spinner('Generating suggestions...'):
         suggested_improvements = suggest_improvements(st.session_state["user_info_json"])
-        time.sleep(1)
+
     
     user_input_area.write("Suggested improvements:")
     for i in suggested_improvements:

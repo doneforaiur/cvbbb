@@ -197,3 +197,8 @@ def info_to_cover_letter(info):
     doc.append(Command("makeletterclosing"))
     
     doc.append(Command("end", "document"))
+    
+    doc.generate_tex("./cover_letter")
+    doc.generate_pdf("./cover_letter")
+    
+    return "./cover_letter.pdf"
