@@ -2,7 +2,7 @@ import base64
 import time
 import streamlit as st
 from guidance_prompts import extract_info, suggest_improvements, improve_cv
-from latex_templates import info_to_pdf
+from latex_templates import info_to_cv, info_to_cover_letter
 
 st.set_page_config(
     page_title="CV Builder but Better!",
@@ -26,7 +26,10 @@ if "generated_cv" not in st.session_state:
     
 if "user_info_json" not in st.session_state:
     st.session_state["user_info_json"] = {}
-    
+
+if "cover_letter_json" not in st.session_state:
+    st.session_state["cover_letter_json"] = {}    
+
 if "generate_cover_letter" not in st.session_state:
     st.session_state["generate_cover_letter"] = False
     
@@ -37,26 +40,25 @@ if "include_job_listing" not in st.session_state:
     st.session_state["include_job_listing"] = False
     
 
-
 with user_input_area:
+    include_job_listing = st.empty()
+    generate_cover_letter = st.empty()
+    job_listing_area = st.empty()
     improvement_suggestions = st.empty()
     user_input_area_text = st.empty()
-    job_listing_area = st.empty()
     user_input_area_button = st.empty()
 
     if st.session_state.generated_cv == False:
-        include_job_listing = st.checkbox('Include job listing?', value=st.session_state["include_job_listing"])
-        if include_job_listing:
-            st.session_state["include_job_listing"] = not st.session_state["include_job_listing"]
+        include_job_listing = include_job_listing.checkbox('Include job listing?', value=st.session_state["include_job_listing"])
+        st.session_state["include_job_listing"] = include_job_listing
                 
         if st.session_state["include_job_listing"]:
             job_listing = job_listing_area.text_area('Job listing', 'We are looking for ...')
             st.session_state["job_listing"] = job_listing
         
         if st.session_state["include_job_listing"]:
-            generate_cover_letter = st.checkbox('Generate a cover letter?', value=st.session_state["generate_cover_letter"])
-            if generate_cover_letter:
-                st.session_state["generate_cover_letter"] = not st.session_state["generate_cover_letter"]
+            generate_cover_letter = generate_cover_letter.checkbox('Generate a cover letter?', value=st.session_state["generate_cover_letter"])
+            st.session_state["generate_cover_letter"] = generate_cover_letter
         
         user_info = user_input_area_text.text_area('Talk about yourself!', 'I am ...')
         if user_input_area_button.button('Generate CV!', use_container_width=True):
@@ -64,9 +66,13 @@ with user_input_area:
             with st.spinner('Extracting information from text...'):
                 user_info_json = extract_info(user_info)
                 st.session_state["user_info_json"] = user_info_json
+                cover_letter_json = generate_cover_letter(user_info_json, st.session_state["job_listing"])
+                st.session_state["cover_letter_json"] = cover_letter_json
                 
             with st.spinner('Generating CV...'):
-                info_to_pdf(user_info_json)
+                info_to_cv(user_info_json)
+                if st.session_state["generate_cover_letter"]:
+                    info_to_cover_letter(user_info_json)
             
             st.session_state["pdf_path"] =  "./resume.pdf"
             st.session_state["generated_cv"] = True
@@ -82,7 +88,7 @@ with user_input_area:
                 st.session_state["user_info_json"] = improved_user_info_json
             
             with st.spinner('Regenerating CV...'):
-                info_to_pdf(improved_user_info_json)
+                info_to_cv(improved_user_info_json)
 
 with pdf_area:
     with open(st.session_state["pdf_path"], "rb") as f:

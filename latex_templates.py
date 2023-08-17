@@ -3,7 +3,7 @@ from pylatex.package import Package
 from pylatex import Document, Section, Subsection, Command, UnsafeCommand
 from pylatex.utils import NoEscape, italic
 
-def info_to_pdf(user_info):
+def info_to_cv(user_info):
 
     # ? Import packages, set rules
     doc = Document(documentclass = 'scrartcl' , document_options = ["paper=a4","fontsize=11pt"], fontenc=None, inputenc=None)
@@ -164,7 +164,7 @@ def info_to_pdf(user_info):
     return "./resume.pdf"
 
 
-def info_to_cover_letter(info):
+def info_to_cover_letter(user_info):
     doc = Document(documentclass = 'moderncv' , document_options = ["11pt","a4paper","roman"], fontenc=None, inputenc=None)
     
     doc.preamble.append(Command("usepackage", "babel","english"))
@@ -172,25 +172,25 @@ def info_to_cover_letter(info):
     # \usepackage[scale=0.75]{geometry}
     doc.preamble.append(Command("usepackage", "geometry", "scale=0.75"))
     
-    doc.append(Command("name", info["first_name"] + " " + info["last_name"]))
-    if info["address"] != "":
-        doc.append(Command("address", info["address"]))
+    doc.append(Command("name", user_info["first_name"] + " " + user_info["last_name"]))
+    if user_info["address"] != "":
+        doc.append(Command("address", user_info["address"]))
     
-    if info["phone"] != "":
-        doc.append(Command("phone", info["phone"]))
+    if user_info["phone"] != "":
+        doc.append(Command("phone", user_info["phone"]))
     
-    if info["email"] != "":
-        doc.append(Command("email", info["email"]))
+    if user_info["email"] != "":
+        doc.append(Command("email", user_info["email"]))
     
     doc.append(Command("begin", "document"))
-    doc.append(Command("recipient", info["recipient"]))
+    doc.append(Command("recipient", user_info["recipient"]))
     doc.append(Command("date", NoEscape(r"\today")))
-    doc.append(Command("opening", info["opening"]))
-    doc.append(Command("closing", info["closing"]))
+    doc.append(Command("opening", user_info["opening"]))
+    doc.append(Command("closing", user_info["closing"]))
 
     doc.append(Command("makelettertitle"))
     
-    doc.append(info["letter_text"])
+    doc.append(user_info["letter_text"])
     
     doc.append(Command("vspace", "1cm"))
     
